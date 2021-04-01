@@ -1,0 +1,157 @@
+---
+title: "Basic Mathematics by R 12-13"
+subtitle: "2021年度KGSOC「数理・データサイエンスのための基礎数学」参考資料"
+author: "石田　淳 (aishida@kwansei.ac.jp)"
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 12章　ベクトル
+
+Rでベクトルは単純に`c()`で構成できる．
+
+```{r}
+a <- c(3, 1)
+b <- c(1, 2)
+c <- a + b
+```
+
+基本的なベクトル演算
+
+```{r}
+print(paste(c("a + b = [", a + b, "]"), collapse = " "))
+print(paste(c("a - b = [", a - b, "]"), collapse = " "))
+print(paste(c("3a + 2b = [", 3 * a + 2 * b, "]"), collapse = " "))
+```
+
+ベクトルの幾何学的表現
+
+```{r}
+plot(0, 0, xlim=c(-1, 4), ylim=c(-1, 4), asp=1, xlab = "", ylab = "")
+arrows(0, 0, x1 = a[1], y1 = a[2]); text(a[1]*1.1, a[2]*1.1, paste("[", a[1], a[2], "]"))
+arrows(0, 0, x1 = b[1], y1 = b[2]); text(b[1]*1.1, b[2]*1.1, paste("[", b[1], b[2], "]"))
+arrows(0, 0, x1 = c[1], y1 = c[2],col="red"); text(c[1]*1.1, c[2]*1.1, paste("[", c[1], c[2], "]"))
+```
+
+内積とノルム．内積ははRでは`%*%`，ただの`*`だと各要素事のかけ算を返すので注意．
+
+```{r}
+print(paste("a . b =", a %*% b))
+print(paste("||a|| = ", norm(a, type = "2")))
+print(paste("||b|| = ", norm(b, type = "2")))
+```
+
+身長と体重データ
+
+```{r}
+x <- c(152.8, 150.1, 182, 163.2, 167.3, 160.2, 164.9, 161.4, 179.9, 172.2)
+y <- c(56.3, 52.1, 85.6, 66.8, 74.2, 58.1, 61.9, 55.1, 70.5, 64.1)
+plot(x, y)
+```
+
+センタリングを行う．
+
+```{r}
+x_cen <- x - mean(x)
+y_cen <- y - mean(y)
+```
+
+共分散と相関係数
+
+```{r}
+s_xy <- (x_cen %*% y_cen) / length(x_cen)
+s_x <- norm(x_cen, type = "2") / sqrt(length(x_cen))
+s_y <- norm(y_cen, type = "2") / sqrt(length(y_cen))
+
+print(paste("s_xy =", s_xy))
+print(paste("s_x =", s_x))
+print(paste("s_y =", s_y))
+print(paste("r_xy =", s_xy / (s_x * s_y)))
+```
+
+# 13章　行列
+
+1次元ベクトルから行列を構成する場合には`matrix()`関数でベクトルを入れた上で行数列数を指定する．1列目から順にベクトルの要素を埋めていく．行優先で要素を埋めたい場合は，オプションで`byrow = TRUE`とする．
+
+```{r}
+A <- matrix(c(2, 4, 1, -6, -3, 5), nrow = 2, ncol = 3)
+B <- matrix(c(1, 3, 3, 0, 4, -1), nrow = 2, ncol = 3)
+```
+
+転置
+```{r}
+t(A)
+```
+
+和・差・スカラー倍
+
+```{r}
+A + B
+A - B
+2 * A + 3 * B
+```
+
+積
+
+```{r}
+A %*% t(B)
+t(A) %*% B
+```
+
+行列の積の幾何学的表現
+
+```{r}
+P <- matrix(c(2, -1, 1, 3), nrow = 2, ncol = 2)
+a <- c(1, 1)
+b <- c(0, 1)
+c <- P %*% a
+d <- P %*% b
+
+plot(0, 0, xlim=c(-1, 4), ylim=c(-1, 4), asp=1, xlab = "", ylab = "")
+arrows(0, 0, x1 = a[1], y1 = a[2], col="red"); text(a[1]*1.1, a[2]*1.1, paste("[", a[1], a[2], "]"))
+arrows(0, 0, x1 = b[1], y1 = b[2], col="red"); text(b[1]*1.1, b[2]*1.1, paste("[", b[1], b[2], "]"))
+arrows(0, 0, x1 = c[1], y1 = c[2], col="blue"); text(c[1]*1.1, c[2]*1.1, paste("[", c[1], c[2], "]"))
+arrows(0, 0, x1 = d[1], y1 = d[2], col="blue"); text(d[1]*1.1, d[2]*1.1, paste("[", d[1], d[2], "]"))
+```
+
+座標全体の線形変換
+
+```{r, message=FALSE}
+library(tidyverse)
+
+cardesian <- expand.grid(x = seq(-10,10,1), y = seq(-10,10,1))
+
+trans <- cardesian
+for (i in 1:nrow(cardesian)) {
+  trans[i,]<-P %*% t(as.matrix(cardesian[i,]))
+}
+
+# 一気にやる場合
+# A %*% t(cardesian) %>% 
+#   t() %>% as_tibble() %>% 
+#   rename(x = V1, y = V2) -> trans
+
+bind_rows("Original" = cardesian,
+          "Transformed" = trans,
+          .id = "type") %>%
+  ggplot() +
+  geom_point(aes(x=x,y=y,color=type)) +
+  coord_fixed() +
+  theme_classic()
+```
+
+分散共分散行列
+
+```{r}
+x <- c(152.8, 150.1, 182, 163.2, 167.3, 160.2, 164.9, 161.4, 179.9, 172.2)
+y <- c(56.3, 52.1, 85.6, 66.8, 74.2, 58.1, 61.9, 55.1, 70.5, 64.1)
+x_cen <- x - mean(x)
+y_cen <- y - mean(y)
+X <- cbind(x_cen, y_cen)
+
+nrow(X)^(-1) * t(X) %*% X
+```

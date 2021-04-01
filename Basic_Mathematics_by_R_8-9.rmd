@@ -1,0 +1,108 @@
+---
+title: "Basic Mathematics by R 8-9"
+subtitle: "2021年度KGSOC「数理・データサイエンスのための基礎数学」参考資料"
+author: "石田　淳 (aishida@kwansei.ac.jp)"
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 8章　総和
+
+```{r}
+ex <- 1:10
+sum(ex)
+```
+
+自前のsum関数を`for`文を使って定義する．
+```{r}
+my_sum <- function(vec) {
+  outcome <- 0
+  for (a in vec) {
+    outcome <- outcome + a
+  }
+  outcome
+}
+
+my_sum(ex)
+```
+
+Rでは基本的な統計関数はほぼ組み込まれている．平均．
+
+```{r}
+m <- mean(ex)
+m
+sum(ex)/length(ex)
+```
+
+分散，ただしn-1で割る不偏標本分散．
+
+```{r}
+s2 <- var(ex)
+s2
+sum((ex - m)^2)/(length(ex) - 1)
+```
+
+標準偏差，ただしn-1で割る標本標準偏差．
+
+```{r}
+s <- sd(ex)
+s
+sqrt(s2)
+```
+
+標準化
+
+```{r}
+z <- (ex - m)/s # scale(ex)
+c(mean(z), sd(z))
+```
+
+# 9章　微分
+
+
+`R`で解析的に微分を行う場合は`expression()`関数で，数式表現オブジェクトに変換した上で`D(func,"var")`もしくは`deriv(func, "var")`でできるらしい．ただし，あまり使い道はなさそう．
+
+```{r}
+f <- expression(x^2 - 2*x + 4)
+D(f,"x")
+deriv(f,"x") #func = TRUE
+```
+
+偏差平方和を最小化する代表値として平均を導出する．
+
+```{r}
+set.seed(8931)
+x <- sort(rnorm(100))
+y <- rep(0, 100)
+mean(x)
+```
+
+最小化関数を定義し，`optimize`関数で最小化問題を解く．
+
+```{r}
+f <- function(a) {
+  sum((x - a)^2)
+}
+ss <- sapply(x, f)
+op <- optimize(f, c(-3,3))
+op
+```
+
+```{r}
+plot(x, y, axes = F, xlab="", ylab="", xlim = c(min(x), max(x)), ylim = c(0, max(ss)))
+abline(h =0)
+par(new=T)
+plot(mean(x),0, axes = F, xlab="", ylab="", col="red", pch = 19,
+     xlim = c(min(x), max(x)), ylim = c(0, max(ss)))
+par(new=T)
+plot(x, ss, axes = F, xlab="", ylab="", type = "l",
+     xlim = c(min(x), max(x)), ylim = c(0, max(ss)))
+par(new=T)
+plot(op$minimum, op$objective, axes = F, xlab="", ylab="", col="red", pch = 19,
+     xlim = c(min(x), max(x)), ylim = c(0, max(ss)))
+segments(mean(x),0, op$minimum, op$objective, col="red", lty = "dashed")
+```
