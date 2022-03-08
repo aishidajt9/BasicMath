@@ -48,7 +48,7 @@ subset <- function(X, Y) {
 
 print(paste('A <= B is', subset(A,B)))
 print(paste('C <= B is', subset(C,B)))
-print(paste('A <= C is', subset(C,B)))
+print(paste('A <= C is', subset(A,C)))
 ```
 
 ## 空集合
