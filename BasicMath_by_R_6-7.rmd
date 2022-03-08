@@ -1,6 +1,6 @@
 ---
 title: "Basic Mathematics by R 6-7"
-subtitle: "2021年度KGSOC「数理・データサイエンスのための基礎数学」参考資料"
+subtitle: "KGSOC「数理・データサイエンスのための基礎数学」参考資料"
 author: "石田　淳 (aishida@kwansei.ac.jp)"
 date: ""
 output: html_document

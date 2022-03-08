@@ -1,6 +1,6 @@
 ---
 title: "Basic Mathematics by R 12-13"
-subtitle: "2021年度KGSOC「数理・データサイエンスのための基礎数学」参考資料"
+subtitle: "KGSOC「数理・データサイエンスのための基礎数学」参考資料"
 author: "石田　淳 (aishida@kwansei.ac.jp)"
 date: ""
 output: html_document
@@ -37,7 +37,7 @@ arrows(0, 0, x1 = b[1], y1 = b[2]); text(b[1]*1.1, b[2]*1.1, paste("[", b[1], b[
 arrows(0, 0, x1 = c[1], y1 = c[2],col="red"); text(c[1]*1.1, c[2]*1.1, paste("[", c[1], c[2], "]"))
 ```
 
-内積とノルム．内積ははRでは`%*%`，ただの`*`だと各要素事のかけ算を返すので注意．
+内積とノルム．内積はRでは`%*%`，ただの`*`だと各要素事のかけ算を返すので注意．
 
 ```{r}
 print(paste("a . b =", a %*% b))
